@@ -134,8 +134,7 @@ def splitstringtolcd(string, font = None):
 
 def getprintjobs():
     outputprints = []
-    #processprints = subprocess.Popen(['lpstat', '-W', 'completed', '-o'], stdout=subprocess.PIPE, encoding='iso-8859-2')
-    processprints = subprocess.Popen(['lpstat', '-W', 'completed', '-o'], stdout=subprocess.PIPE, encoding='utf-8')
+    processprints = subprocess.Popen(['lpstat', '-W', 'completed', '-o'], stdout=subprocess.PIPE, encoding='iso-8859-2')
     if processprints.wait() == 0:
         outputprints = processprints.communicate()[0].strip().split('\n')
     return len(outputprints), outputprints
@@ -173,6 +172,7 @@ def getprintjobdetails(job):
         jobstatus,jobdetails = extractjobdetails(outputjob)
         if jobstatus != invalidstatus: 
             jobdetails.insert(0, job)
+            jobdate = jobdate.encode('latin2', errors='ignore').decode('utf-8', errors='ignore')
             jobdetails.append(jobdate)
             #[job, jobnum, jobprinter, jobowner, jobfile, jobsize, jobdate]
             #logging.debug('getprintjobdetails: ' + str(jobstatus) + ", " + str(jobdetails))
