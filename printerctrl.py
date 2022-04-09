@@ -155,6 +155,8 @@ def extractjobdetails(job, chkpending = False):
         jobfile = ''
         if job[0].find('smbprn') == 0:
             jobfile = normalizediacritics(' '.join(job[1:-2]))
+        elif len(job) > 3 and job[-1] == "bytes":
+            jobfile = normalizediacritics(' '.join(job[0:-2]))
         #[job, jobnum, jobprinter, jobowner, jobfile, jobsize, jobdate]
         return jobstatus,[jobnum, jobprinter, jobowner, jobfile, jobsize]
     return jobstatus,[]
@@ -347,11 +349,18 @@ def displayprinthistory(LCD, selection):
             if num < len(printslist):
                 if (num + 1) == (jobtoshow + linesel):
                     draw.rectangle([(1, linepos), (126, linepos+12)], fill = backcolor)
-                if printslist[num][1] and printslist[num][4]:
-                    reqname = str(printslist[num][1]) + ":" + str(printslist[num][4])
+                if printslist[num][1]:
+                    jobid = str(printslist[num][1])
+                    jobfilename = str(printslist[num][4])
+                    if not printslist[num][4]:
+                        jobfilename = "NO FILENAME"
+                    reqname = jobid + ":" + jobfilename
+                else:
+                    reqname = "cannot get this job"
             elif num == len(printslist):
                 reqname = "==== END OF LIST ===="
-            else: break
+            else: 
+                break
 
             issplit,reqnamefirst,reqnamesecond = splitstringtolcd(reqname)
             if issplit == True:
@@ -495,7 +504,7 @@ def displayipmenu(LCD, selection):
         dnsend = outputip.find("/24")
         ipaddr = outputip[ipaddrstart:ipaddrend].split()
         dnsname = outputip[dnsstart:dnsend].split()
-        processdns = subprocess.Popen(['nslookup', '192.168.1.112'], stdout=subprocess.PIPE)
+        processdns = subprocess.Popen(['nslookup', '192.168.5.150'], stdout=subprocess.PIPE)
         outputdns = str(processdns.communicate()[0])
         dnsstart = outputdns.find("name = ")
         dnsname = outputdns[dnsstart:].split()
